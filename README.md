@@ -7,3 +7,7 @@ Uses data from social medias to connect and make friends.
 3. The person running the script should have their YouTube Channel ID as the first line in `youtube_channel_ids.txt`
 4. Add your friends or potential friends' IDs to the next lines.
 5. Run v5.py
+
+# To Do:
+* Make it a web app
+* Store users subscriptions to a database to find new friends that have previously used the website
