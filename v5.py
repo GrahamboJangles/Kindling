@@ -23,7 +23,7 @@ youtube = build('youtube', 'v3', developerKey=api_key)
   
 def get_subscription_data(user, youtube=youtube):
   print("Getting subscription data...")
-  # request = youtube.subscriptions().list(part="snippet", channelId="UCf7uzsx56JP5ZIi_81LaaIQ")
+  
   #                                                                                                    every page token returns an error
   request = youtube.subscriptions().list(part="snippet", channelId=user, maxResults=50, pageToken=None, forChannelId=None, order="alphabetical")
   # CAEQAA, CAIQAA
@@ -562,9 +562,10 @@ open("youtube.com/c/{id}")
 
 MAKE A DATABASE THAT HOLDS EACH USERS SUBSCRIPTIONS
 
-TO DO:
 IMPROVE THE DATABASE TO HOLD MORE USERS
 
+
+TO DO:
 LOAD IN ALL USERS AND COMPARE ALL USERS AGAINST SINGLE USER
 """
 
