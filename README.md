@@ -11,3 +11,4 @@ Uses data from social medias to connect and make friends.
 # To Do:
 * Make it a web app
 * Store users subscriptions to a database to find new friends that have previously used the website
+* Add messaging functionality OR allow people to add their social medias so they can now make friends :)
