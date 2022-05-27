@@ -15,9 +15,15 @@ def get_subs_info(response):
   # print(subs_ids)
   subs_titles = [subsubs["snippet"]["title"] for subsubs in subs]
   # print(subs_titles)
-
   return subs_ids, subs_titles
 
+def get_username(user_id):
+  request = youtube.channels().list(part="snippet", id=user_id)
+  response = request.execute()
+  username = response['items'][0]['snippet']['title']
+  return username
+  
+from shutil import ExecError
 from googleapiclient.discovery import build
 youtube = build('youtube', 'v3', developerKey=api_key)
   
@@ -26,7 +32,7 @@ def get_subscription_data(user, youtube=youtube):
   
   #                                                                                                    every page token returns an error
   request = youtube.subscriptions().list(part="snippet", channelId=user, maxResults=50, pageToken=None, forChannelId=None, order="alphabetical")
-  # CAEQAA, CAIQAA
+  # pageToken examples: CAEQAA, CAIQAA
   try:
     response = request.execute()
   # except googleapiclient.discovery.HttpError as e: 
@@ -87,23 +93,24 @@ def get_subscription_data(user, youtube=youtube):
             print(e)
             print()
             if "The requester is not allowed to access the requested subscriptions." in str(e):
-                print("Don't have permission to access this account. This is probably because you're logged into the wrong account.")
-                user_input = input(f"Is youtube.com/channel/{user} your account? y/n: ")
+              username = get_username(user_id=user)
+              print(f"Don't have permission to access {username}'s account. This is probably because you're logged into the wrong account.")
+              user_input = input(f"Is youtube.com/channel/{user} your account? y/n: ")
+              if user_input.lower() == "y":
+                user_input = input("Would you like to log out? You'll lose your access tokens to this account. Backup your token.pickle file if you'd like to keep it. y/n: ")
                 if user_input.lower() == "y":
-                  user_input = input("Would you like to log out? You'll lose your access tokens to this account. Backup your token.pickle file if you'd like to keep it. y/n: ")
-                  if user_input.lower() == "y":
-                      import os
-                      print()
-                      print(f"Deleting {token_filename} file")
-                      print()
-                      os.remove(token_filename)
+                    import os
+                    print()
+                    print(f"Deleting {token_filename} file")
+                    print()
+                    os.remove(token_filename)
 
-                      raise Exception("Please restart the current script.")
-                  else:
-                      raise Exception("Need to be logged in since the account doesn't have subscription data public. Go to https://www.youtube.com/account_privacy to make it public. Then go to https://www.youtube.com/account_advanced and copy your Channel ID.")
+                    raise Exception("Please restart the current script.")
                 else:
-                  users_ids.remove(user)
-                  return
+                    raise Exception("Need to be logged in since the account doesn't have subscription data public. Go to https://www.youtube.com/account_privacy to make it public. Then go to https://www.youtube.com/account_advanced and copy your Channel ID.")
+              else:
+                users_ids.remove(user)
+                return
             
 
   # request.execute()
@@ -117,6 +124,7 @@ def get_subscription_data(user, youtube=youtube):
   except KeyError:
     # only one page
     subs_ids, subs_titles = get_subs_info(response)
+    username = get_username(user_id=user)
     subscriptions.append(subs_titles)
     pass
   # print(nextpagetoken)
@@ -143,6 +151,7 @@ def get_subscription_data(user, youtube=youtube):
           raise Exception("Internal error: one of the user's channel ID's are probably invalid.")
     
     subs_ids, subs_titles = get_subs_info(response)
+    username = get_username(user_id=user)
     subscriptions_ids.append(subs_ids)
     subscriptions.append(subs_titles)
     # print(subscriptions)
@@ -187,7 +196,7 @@ def get_subscription_data(user, youtube=youtube):
   mylist = list(dict.fromkeys(merged))
   users_subscriptions_ids.append(mylist)
   
-  return users_subscriptions_titles, users_subscriptions_ids
+  return users_subscriptions_titles, users_subscriptions_ids, username
   
   
 # https://www.geeksforgeeks.org/read-a-file-line-by-line-in-python/
@@ -209,9 +218,8 @@ line_num = 0
 for user_num in range(len(users_ids)):
   # Add user id to user data dictionary
   # print(f"user num + line num: {user_num + line_num}")
-  """
-  Gotta put the user ID in the dictionary first and then we can iterate through the items in the dictionary
-  """
+  
+  # Gotta put the user ID in the dictionary first and then we can iterate through the items in the dictionary
   user_data["user_id"] = Lines[user_num].strip()
   # print(user_data["user_id"])
   # print(Lines)
@@ -225,12 +233,17 @@ for user_num in range(len(users_ids)):
   print(user_num)
   print(len(users_ids))
   try:
-    users_subscriptions_titles, users_subscriptions_ids = get_subscription_data(user=users_ids[user_num])
+    users_subscriptions_titles, users_subscriptions_ids,username = get_subscription_data(user=users_ids[user_num])
   except TypeError: print("Skipping user")
   except IndexError: pass
+  
+  # Add username to user data dictionary
+  user_data["username"] = username
+  
   # Add user subscription titles to user data dictionary
   user_data["user_subscriptions_titles"] = users_subscriptions_titles
   # print(f"Userdata['user_id']: {user_data['user_id']}")
+  
   
   # Add user data dictionary to users data list
   users_data.append(user_data.copy())
@@ -268,21 +281,97 @@ lst1 = users_data[0]['user_subscriptions_titles'][0] # for some reason it's a li
 lst2 = users_data[1]['user_subscriptions_titles'][0] # for some reason it's a list of a list so we have to take the 0th one, even though it has a len() of 1
 lst4 = ['Trader University', 'NileRed', 'Hamilton Morris', 'Myers Mushrooms Farms', 'Greengenes Garden', 'Charls Carroll', 'Mike Boyd', 'TheraminTrees', 'I did a thing', 'Self Sufficient Me', 'Digital Asset News', 'ARK Invest', 'MillionDollarExtreme2', 'Terra Mater', 'yukikawae', 'BuildASoil', 'Nathaniel Whittemore', 'Prof. Edward Dutton: The Jolly Heretic', 'Michigan organic Budz', 'homesteadonomics', 'Robert Sepehr', 'Oxen Project', 'dnsl', 'Langfocus', 'Approtechie', 'DavvyOnYT', "The Investor's Podcast Network", 'Mycology corner', 'Monsieur Z', 'Paul Stamets', 'History Debunked', 'The Spiffing Brit', 'The Market Sniper', 'Benjamin Cowen', 'NakeyJakey', 'Steve Wallis', 'FirstBuild', 'Southwest Mushrooms', 'S2 Underground', 'Best of Perfect Guy Life-MDE', 'DIY Perks', 'Learn Organic Gardening at GrowingYourGreens', 'PilotRedSun', 'Joel Haver', 'Tech Ingredients', 'Home Mycology', 'DistroTube', 'Warlockracy', 'GeoWizard', 'Fresh from the Farm Fungi', "Tod's Workshop", 'Linus Tech Tips', 'Dapp University', 'WHAT THE FUNGUS', 'Crowbcat', 'Jack Sather', 'From Seed to Stoned', 'Sheldon Evans', 'Limmy', 'Mossy Creek Mushrooms', 'Advoko MAKES', 'I Allegedly', 'Earth Angel Mushrooms', 'Anton Petrov', 'Kamikaze Cash', 'JonTronShow', 'WhistlinDiesel', 'Mike Rosehart', 'InRangeTV', 'General Sam', 'HAINBACH', 'Anthony Pompliano', 'DeBacco University', 'Guga Foods', 'HydeWars', 'Vagrant Holiday', 'lil incognito', 'Gamers Nexus', 'Simon Roper', 'Bybit', "Rob Bob's Aquaponics & Backyar's Lemonade - Crime Documentary", 'anton newcombe', 'JayzTwoCents', 'Brandon Buckingham', '2DNSL', 'Louis Rossmann', 'FunGuyFruits', 'InvestAnswers', 'YouTube Movies', 'Fully Silent PCs', 'Kitboga', 'Carefree Wandering', 'Crypto Face', 'Aamon Animations', 'Gregory Mannarino', 'subcool420', 'Sous Vide Everything', 'Coin Bureau', 'J. Kenji López-Alt', 'Engineer Man', 'Forgotten Weapons', 'Techlore', 'Kurzgesagt – In a Nutshell']
 
+print("Sleeping")
+import time
+# time.sleep(2)
 print(len(users_data))
-for user_num in range(len(users_data)+1): # +1 to skip the first user
+for user_num in range(len(users_data)-1): # +1 to skip the first user
+  """
+  Would be nicer if we could get the username for better readability, maybe add a username item in the users_data dictionaries?
+  Could make a new file youtube_channel_titles.txt and do the same thing we did with the ids, already have the code 
+  """
+
+  # request = youtube.subscriptions().list(part="snippet", channelId=users_data[user_num]['user_id'], maxResults=1, pageToken=None, forChannelId=None, order="alphabetical")
+  # request = youtube.channel_search()
+  # https://googleapis.github.io/google-api-python-client/docs/dyn/youtube_v3.channels.html
+  # id, forUsername, mine, managedByMe, categoryId, mySubscribers
+  # request = youtube.channels().list(part="snippet", id=users_data[user_num]['user_id'])
+  # response = request.execute()
+  # print(f"Response: {response}")
+  # dictionary of a dictionary of a list of a dictionary of a dictionary
+  # print(response['items'][0]['snippet']['title'])
+  
+  # Add username to user data dictionary
+  # user_data["username"] = username
+  
+  # Add user data dictionary to users data list
+  # I need to replace the first dictionary
+  # users_data.append(user_data.copy())
+  # subs_ids, subs_titles = get_subs_info(response)
+  
+  # print(users_data[0])
+  # raise Exception()
+  
+  # print(users_data[user_num]['user_id'])
+  
+  
+  # print(f"Subscriptions in common with {users_ids[user_num]}")
+  # print(users_data[0])
+  # raise Exception
+  # skip comparing user to themself by adding 1
+  # print(f"Subscriptions in common with {users_data[user_num+1]['username']}")
+  print(f"Comparing user_id1 subscriptions with {users_data[user_num+1]['username']}")
+  # try:
+  # skip comparing user to themself by adding 1
+  common_subs_num = len(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num+1]['user_subscriptions_titles'][0]))
+  print(common_subs_num)
+
+  # Add number of common subscriptions to user_data dictionary
+  users_data[user_num+1]['common_subs_num'] = common_subs_num
+  
+  print(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num+1]['user_subscriptions_titles'][0]))
+  # except IndexError as e: 
+  #   print(e)
+    # pass
+  
+print(users_data[-2])
+raise Exception
+"""
+for user_num in range(len(users_ids)):
+  # Add user id to user data dictionary
+  # print(f"user num + line num: {user_num + line_num}")
+  
+  # Gotta put the user ID in the dictionary first and then we can iterate through the items in the dictionary
+  user_data["user_id"] = Lines[user_num].strip()
+  # print(user_data["user_id"])
+  # print(Lines)
+  line_num += 1
+  # # Add user data dictionary to users data list
+  # users_data.append(user_data)
+  
+  # print(f"user num: {user_num}")
+  # print(f"users ids: {users_ids[user_num]}")
+  
+  print(user_num)
+  print(len(users_ids))
   try:
-    """
-    Would be nicer if we could get the username for better readability, maybe add a username item in the users_data dictionaries?
-    Could make a new file youtube_channel_titles.txt and do the same thing we did with the ids, already have the code 
-    """
-    print(f"Subscriptions in common with {users_ids[user_num]}")
-    """
-    Also, maybe add len(intersection) as another item to add to the database.
-    """
-    
-    print(len(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num]['user_subscriptions_titles'][0])))
-    print(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num]['user_subscriptions_titles'][0]))
+    users_subscriptions_titles, users_subscriptions_ids = get_subscription_data(user=users_ids[user_num])
+  except TypeError: print("Skipping user")
   except IndexError: pass
+  # Add user subscription titles to user data dictionary
+  user_data["user_subscriptions_titles"] = users_subscriptions_titles
+  # print(f"Userdata['user_id']: {user_data['user_id']}")
+  
+  # Add user data dictionary to users data list
+  users_data.append(user_data.copy())
+  #                           .copy() or else it will act as if user_data never changed
+  #                           this is because it's referencing the same user data dictionary
+  #                           I think it has something to do with mutability/immutability
+  # print(len(users_data))
+"""
+  
+  
+  
   
 # print(set.intersection(*map(set,users_data)))
 # output: {'user_subscriptions_titles', 'user_id'}
@@ -312,8 +401,6 @@ for user_num in range(len(users_data)+1): # +1 to skip the first user
 # reduce(set.intersection, map(set, users_data[0].values()))
 # {23}
 
-
-raise Exception
 
 print()
 print(f"Users have {len(intersection_as_list)} subscriptions in common:")
@@ -564,9 +651,12 @@ MAKE A DATABASE THAT HOLDS EACH USERS SUBSCRIPTIONS
 
 IMPROVE THE DATABASE TO HOLD MORE USERS
 
+add len(intersection) as another item to add to the database
+
+LOAD IN ALL USERS AND COMPARE ALL USERS AGAINST SINGLE USER
 
 TO DO:
-LOAD IN ALL USERS AND COMPARE ALL USERS AGAINST SINGLE USER
+
 """
 
 
