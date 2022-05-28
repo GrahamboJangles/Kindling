@@ -1,6 +1,9 @@
 # Kindling
 Uses data from social medias to connect and make friends.
 
+![image](https://user-images.githubusercontent.com/36944031/170806373-e4292064-7f43-4c0c-964a-17ef2087aed5.png)
+
+
 # Instructions
 1. Get an API key by following this video: <a href="http://www.youtube.com/watch?feature=player_embedded&v=th5_9woFJmk
 " target="_blank"><img src="http://img.youtube.com/vi/th5_9woFJmk/0.jpg" 
