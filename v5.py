@@ -1,3 +1,33 @@
+def install(package, e):
+	print(f"Error: {e}")
+	print(f"{package} dependency not found")
+	answer = input(f"Would you like to install {package}? y/n: ")
+	if answer.lower() == "y":
+		print("Beginning installation...")
+		
+		import platform
+		OS = platform.system()
+		print(OS)
+		
+		import os
+		if "Windows".lower() in OS.lower():
+			os.system(f"pip install {package} && echo. && echo Restart program after package installation. && pause") # for Windows
+		else:
+			os.system(f"pip3 install {package}") #for Linux and MacOS
+		
+		print("Restart program after package installation.")
+	else:
+		print("f{package} is required to run this program.")
+
+try:
+    package = "google-api-python-client"
+    from googleapiclient.discovery import build
+except ModuleNotFoundError as e:
+    install(package, e)
+else:
+    # print(f"{package} already installed")
+    pass
+
 # https://console.cloud.google.com/apis/credentials?project=youtube-api-350700
   
 # with open("api_key.txt", "r") as token:
@@ -90,7 +120,7 @@ def get_subscription_data(user, youtube=youtube):
         try:
             response = request.execute()
         except errors.HttpError as e:
-            print(e)
+            # print(e)
             print()
             if "The requester is not allowed to access the requested subscriptions." in str(e):
               username = get_username(user_id=user)
@@ -230,8 +260,8 @@ for user_num in range(len(users_ids)):
   # print(f"user num: {user_num}")
   # print(f"users ids: {users_ids[user_num]}")
   
-  print(user_num)
-  print(len(users_ids))
+  # print(user_num)
+  # print(len(users_ids))
   try:
     users_subscriptions_titles, users_subscriptions_ids,username = get_subscription_data(user=users_ids[user_num])
   except TypeError: print("Skipping user")
@@ -279,18 +309,13 @@ def intersection(lst1, lst2):
 # Driver Code
 lst1 = users_data[0]['user_subscriptions_titles'][0] # for some reason it's a list of a list so we have to take the 0th one, even though it has a len() of 1
 lst2 = users_data[1]['user_subscriptions_titles'][0] # for some reason it's a list of a list so we have to take the 0th one, even though it has a len() of 1
-lst4 = ['Trader University', 'NileRed', 'Hamilton Morris', 'Myers Mushrooms Farms', 'Greengenes Garden', 'Charls Carroll', 'Mike Boyd', 'TheraminTrees', 'I did a thing', 'Self Sufficient Me', 'Digital Asset News', 'ARK Invest', 'MillionDollarExtreme2', 'Terra Mater', 'yukikawae', 'BuildASoil', 'Nathaniel Whittemore', 'Prof. Edward Dutton: The Jolly Heretic', 'Michigan organic Budz', 'homesteadonomics', 'Robert Sepehr', 'Oxen Project', 'dnsl', 'Langfocus', 'Approtechie', 'DavvyOnYT', "The Investor's Podcast Network", 'Mycology corner', 'Monsieur Z', 'Paul Stamets', 'History Debunked', 'The Spiffing Brit', 'The Market Sniper', 'Benjamin Cowen', 'NakeyJakey', 'Steve Wallis', 'FirstBuild', 'Southwest Mushrooms', 'S2 Underground', 'Best of Perfect Guy Life-MDE', 'DIY Perks', 'Learn Organic Gardening at GrowingYourGreens', 'PilotRedSun', 'Joel Haver', 'Tech Ingredients', 'Home Mycology', 'DistroTube', 'Warlockracy', 'GeoWizard', 'Fresh from the Farm Fungi', "Tod's Workshop", 'Linus Tech Tips', 'Dapp University', 'WHAT THE FUNGUS', 'Crowbcat', 'Jack Sather', 'From Seed to Stoned', 'Sheldon Evans', 'Limmy', 'Mossy Creek Mushrooms', 'Advoko MAKES', 'I Allegedly', 'Earth Angel Mushrooms', 'Anton Petrov', 'Kamikaze Cash', 'JonTronShow', 'WhistlinDiesel', 'Mike Rosehart', 'InRangeTV', 'General Sam', 'HAINBACH', 'Anthony Pompliano', 'DeBacco University', 'Guga Foods', 'HydeWars', 'Vagrant Holiday', 'lil incognito', 'Gamers Nexus', 'Simon Roper', 'Bybit', "Rob Bob's Aquaponics & Backyar's Lemonade - Crime Documentary", 'anton newcombe', 'JayzTwoCents', 'Brandon Buckingham', '2DNSL', 'Louis Rossmann', 'FunGuyFruits', 'InvestAnswers', 'YouTube Movies', 'Fully Silent PCs', 'Kitboga', 'Carefree Wandering', 'Crypto Face', 'Aamon Animations', 'Gregory Mannarino', 'subcool420', 'Sous Vide Everything', 'Coin Bureau', 'J. Kenji López-Alt', 'Engineer Man', 'Forgotten Weapons', 'Techlore', 'Kurzgesagt – In a Nutshell']
+# lst4 = ['Trader University', 'NileRed', 'Hamilton Morris', 'Myers Mushrooms Farms', 'Greengenes Garden', 'Charls Carroll', 'Mike Boyd', 'TheraminTrees', 'I did a thing', 'Self Sufficient Me', 'Digital Asset News', 'ARK Invest', 'MillionDollarExtreme2', 'Terra Mater', 'yukikawae', 'BuildASoil', 'Nathaniel Whittemore', 'Prof. Edward Dutton: The Jolly Heretic', 'Michigan organic Budz', 'homesteadonomics', 'Robert Sepehr', 'Oxen Project', 'dnsl', 'Langfocus', 'Approtechie', 'DavvyOnYT', "The Investor's Podcast Network", 'Mycology corner', 'Monsieur Z', 'Paul Stamets', 'History Debunked', 'The Spiffing Brit', 'The Market Sniper', 'Benjamin Cowen', 'NakeyJakey', 'Steve Wallis', 'FirstBuild', 'Southwest Mushrooms', 'S2 Underground', 'Best of Perfect Guy Life-MDE', 'DIY Perks', 'Learn Organic Gardening at GrowingYourGreens', 'PilotRedSun', 'Joel Haver', 'Tech Ingredients', 'Home Mycology', 'DistroTube', 'Warlockracy', 'GeoWizard', 'Fresh from the Farm Fungi', "Tod's Workshop", 'Linus Tech Tips', 'Dapp University', 'WHAT THE FUNGUS', 'Crowbcat', 'Jack Sather', 'From Seed to Stoned', 'Sheldon Evans', 'Limmy', 'Mossy Creek Mushrooms', 'Advoko MAKES', 'I Allegedly', 'Earth Angel Mushrooms', 'Anton Petrov', 'Kamikaze Cash', 'JonTronShow', 'WhistlinDiesel', 'Mike Rosehart', 'InRangeTV', 'General Sam', 'HAINBACH', 'Anthony Pompliano', 'DeBacco University', 'Guga Foods', 'HydeWars', 'Vagrant Holiday', 'lil incognito', 'Gamers Nexus', 'Simon Roper', 'Bybit', "Rob Bob's Aquaponics & Backyar's Lemonade - Crime Documentary", 'anton newcombe', 'JayzTwoCents', 'Brandon Buckingham', '2DNSL', 'Louis Rossmann', 'FunGuyFruits', 'InvestAnswers', 'YouTube Movies', 'Fully Silent PCs', 'Kitboga', 'Carefree Wandering', 'Crypto Face', 'Aamon Animations', 'Gregory Mannarino', 'subcool420', 'Sous Vide Everything', 'Coin Bureau', 'J. Kenji López-Alt', 'Engineer Man', 'Forgotten Weapons', 'Techlore', 'Kurzgesagt – In a Nutshell']
 
-print("Sleeping")
-import time
+# print("Sleeping")
+# import time
 # time.sleep(2)
-print(len(users_data))
-for user_num in range(len(users_data)-1): # +1 to skip the first user
-  """
-  Would be nicer if we could get the username for better readability, maybe add a username item in the users_data dictionaries?
-  Could make a new file youtube_channel_titles.txt and do the same thing we did with the ids, already have the code 
-  """
-
+# print(len(users_data))
+for user_num in range(len(users_data)-1): # -1 because we skip the first user later in the loop, so the length is shorter
   # request = youtube.subscriptions().list(part="snippet", channelId=users_data[user_num]['user_id'], maxResults=1, pageToken=None, forChannelId=None, order="alphabetical")
   # request = youtube.channel_search()
   # https://googleapis.github.io/google-api-python-client/docs/dyn/youtube_v3.channels.html
@@ -318,24 +343,25 @@ for user_num in range(len(users_data)-1): # +1 to skip the first user
   # print(f"Subscriptions in common with {users_ids[user_num]}")
   # print(users_data[0])
   # raise Exception
-  # skip comparing user to themself by adding 1
+
   # print(f"Subscriptions in common with {users_data[user_num+1]['username']}")
-  print(f"Comparing user_id1 subscriptions with {users_data[user_num+1]['username']}")
+  # print(f"Comparing user_id1 subscriptions with {users_data[user_num+1]['username']}")
   # try:
-  # skip comparing user to themself by adding 1
+  #                                                                                       skip comparing user to themself by adding 1
   common_subs_num = len(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num+1]['user_subscriptions_titles'][0]))
-  print(common_subs_num)
+  print(f"{users_data[0]['username']} and {users_data[user_num+1]['username']} have {common_subs_num} subscriptions in common.")
 
   # Add number of common subscriptions to user_data dictionary
   users_data[user_num+1]['common_subs_num'] = common_subs_num
   
   print(intersection(users_data[0]['user_subscriptions_titles'][0], users_data[user_num+1]['user_subscriptions_titles'][0]))
+  print()
   # except IndexError as e: 
   #   print(e)
     # pass
   
-print(users_data[-2])
-raise Exception
+# print(users_data[-2])
+exit()
 """
 for user_num in range(len(users_ids)):
   # Add user id to user data dictionary
@@ -421,35 +447,7 @@ users_data
 
 
 
-def install(package, e):
-	print(f"Error: {e}")
-	print(f"{package} dependency not found")
-	answer = input(f"Would you like to install {package}? y/n: ")
-	if answer.lower() == "y":
-		print("Beginning installation...")
-		
-		import platform
-		OS = platform.system()
-		print(OS)
-		
-		import os
-		if "Windows".lower() in OS.lower():
-			os.system(f"pip install {package} && echo. && echo Restart program after package installation. && pause") # for Windows
-		else:
-			os.system(f"pip3 install {package}") #for Linux and MacOS
-		
-		print("Restart program after package installation.")
-	else:
-		print("f{package} is required to run this program.")
 
-try:
-    package = "google-api-python-client"
-    from googleapiclient.discovery import build
-except ModuleNotFoundError as e:
-    install(package, e)
-else:
-    # print(f"{package} already installed")
-    pass
 
 
 
