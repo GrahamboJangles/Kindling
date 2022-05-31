@@ -15,6 +15,7 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>. Once you 
 6. Run v5.py
 
 # To Do:
+* Add Reddit API, TikTok
 * Make it a web app
 * Store users subscriptions to a database to find new friends that have previously used the website
 * Add messaging functionality OR allow people to add their social medias so they can now make friends :)
