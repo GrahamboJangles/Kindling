@@ -59,8 +59,6 @@ youtube = build('youtube', 'v3', developerKey=api_key)
   
 def get_subscription_data(user, youtube=youtube):
   print("Getting subscription data...")
-  
-  #                                                                                                    every page token returns an error
   request = youtube.subscriptions().list(part="snippet", channelId=user, maxResults=50, pageToken=None, forChannelId=None, order="alphabetical")
   # pageToken examples: CAEQAA, CAIQAA
   try:
@@ -98,7 +96,7 @@ def get_subscription_data(user, youtube=youtube):
             if os.path.exists(token_filename):
                 with open(token_filename, "rb") as token:
                     creds = pickle.load(token)
-            # if there are no (valid) credentials availablle, let the user log in.
+            # if there are no (valid) credentials available, let the user log in.
             if not creds or not creds.valid:
                 if creds and creds.expired and creds.refresh_token:
                     creds.refresh(Request())
@@ -164,7 +162,7 @@ def get_subscription_data(user, youtube=youtube):
   # print(response)
   final_page = False
 
-  # If nextpagetoken is not defined, set to None
+  # If nextpagetoken is not defined because there is only one page, set to None
   try:
     nextpagetoken
   except: nextpagetoken = None
