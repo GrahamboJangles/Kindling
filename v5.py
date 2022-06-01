@@ -295,8 +295,7 @@ def clear():
 clear()
 # print(users_data[1]['user_subscriptions_titles'])
 
-# Python program to illustrate the intersection
-# of two lists in most simple way
+# finds common items in 2 lists
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
